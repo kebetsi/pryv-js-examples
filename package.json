@@ -1,7 +1,7 @@
 {
-  "name": "pryv-js-examples",
+  "name": "pryv-utils",
   "version": "0.0.1",
-  "description": "Useful javascript scripts for Pryv data manipulation",
+  "description": "Useful javascript functions for Pryv data manipulation",
   "main": "index.js",
   "scripts": {
     "test": "test"
