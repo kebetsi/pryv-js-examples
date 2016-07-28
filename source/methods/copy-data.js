@@ -51,7 +51,7 @@ module.exports = function copyData(params, callback) {
           })
       },
       function createDataOnDestination (stepDone) {
-        destinationConnection.batchCall(createEvents, function (err, res) {
+        params.destinationConnection.batchCall(createEvents, function (err, res) {
           if (err) {
             return stepDone(err);
           }
