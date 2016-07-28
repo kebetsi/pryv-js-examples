@@ -4,7 +4,9 @@ Utilitary methods for Pryv data manipulation in **Node.js**
 
 ## Usage
 
-add the following line to your **package.json** dependencies: `"pyUtils":"git+ssh://git@github.com:kebetsi/pryv-js-utils.git"`  
+add the following line to your **package.json** dependencies:  
+
+`"pyUtils":"git+ssh://git@github.com:kebetsi/pryv-js-utils.git"`  
 
 Then in your code, use:  
 
