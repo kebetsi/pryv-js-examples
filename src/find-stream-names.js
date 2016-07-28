@@ -12,7 +12,6 @@ getStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err
   console.log(res);
 });
 
-
 /**
  * Returns the streamIds of the requested streams.
  * The format is an object:
@@ -34,12 +33,12 @@ getStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err
  *
  * @param connection {pryv.Connection}
  * @param streamNames {Array}
- * @param callback
+ * @param callback {Function}
  */
 function getStreamIds(connection, streamNames, callback) {
 
-  async.series({
-    getStructure: function (stepDone) {
+  async.series([
+    function getStructure (stepDone) {
       connection.fetchStructure(function (err) {
         if (err) {
           return stepDone(err);
@@ -47,14 +46,13 @@ function getStreamIds(connection, streamNames, callback) {
         stepDone();
       });
     },
-    getStreams: function (stepDone) {
-      connection.streams.getFlatenedObjects({}, function (err, streams) {
+    function getStreams (stepDone) {
+      connection.streams.getFlattenedObjects({}, function (err, streams) {
         if (err) {
           return stepDone(err);
         }
         var matched = {};
         streams.forEach(function (s) {
-          //console.log('comparing ', s.name, ' in ', streamNames);
           if (streamNames.indexOf(s.name) >= 0) {
             if (!matched[s.name]) {
               matched[s.name] = [];
@@ -68,10 +66,10 @@ function getStreamIds(connection, streamNames, callback) {
         stepDone(null, matched);
       });
     }
-  }, function (err, res) {
+  ], function (err, res) {
     if (err) {
       return callback(err);
     }
-    callback(null, res.getStreams);
+    callback(null, res[1]);
   });
 }
