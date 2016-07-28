@@ -8,7 +8,7 @@ var connection = new pryv.Connection({
   domain: 'pryv.me'
 });
 
-getStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err, res) {
+findStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err, res) {
   console.log(res);
 });
 
@@ -35,7 +35,7 @@ getStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err
  * @param streamNames {Array}
  * @param callback {Function}
  */
-function getStreamIds(connection, streamNames, callback) {
+function findStreamIds(connection, streamNames, callback) {
 
   async.series([
     function getStructure (stepDone) {
@@ -47,7 +47,7 @@ function getStreamIds(connection, streamNames, callback) {
       });
     },
     function getStreams (stepDone) {
-      connection.streams.getFlattenedObjects({}, function (err, streams) {
+      connection.streams.getFlatenedObjects({}, function (err, streams) {
         if (err) {
           return stepDone(err);
         }
