@@ -7,62 +7,77 @@ var params = {
   numDays: 2,
   data: [
     {
-      content: 120,
+      value: 120,
       variance: 20,
       type: 'pressure/mmhg',
-      streamId: 'cir4pm1sb4ynjzqyqqx4i43vb',
-      streamName: 'High pressure'
+      streamId: 'High-pressure-1234'
     },
     {
-      content: 80,
+      value: 80,
       variance: 20,
       type: 'pressure/mmhg',
-      streamId: 'cir4pml4r4ynlzqyq0c6hh6g8',
-      streamName: 'Low pressure'
+      streamId: 'Low-pressure-1234'
     },
     {
-      content: 70,
+      value: 70,
       variance: 20,
       type: 'frequency/bpm',
-      streamId: 'cir4gwblt4ylkzqyq4bc3bny8',
-      streamName: 'Heart rate'
+      streamId: 'Heart-rate-1234'
     },
     {
-      content: 2000,
+      value: 2000,
       variance: 200,
       type: 'energy/cal',
-      streamId: 'cir4gbcag4yk9zqyqwb399apr',
-      streamName: 'Total calories'
+      streamId: 'Total-calories-1234'
     },
     {
-      content: 5000,
+      value: 5000,
       variance: 2000,
       type: 'count/steps',
-      streamId: 'cir4gjg004ykszqyqfrrdaj72',
-      streamName: 'Aerobics'
+      streamId: 'Aerobics-1234'
     },
     {
-      content: 5.25,
+      value: 5.25,
       variance: 0.8,
       type: 'density/mmol-l',
-      streamId: 'cir4gyhok4ylozqyqm2bslcqj',
-      streamName: 'Gylcemia'
+      streamId: 'Gylcemia-1234'
     }
   ]
 };
 
-var createEvents = generateEventsCreation(params);
+var createEvents = createNumericalEvents(params);
 
 createEvents.forEach(function (e) {
   console.log(e);
 });
 
 /**
- * Generate Events of the provided types and values for the last X days.
+ * Generates batch call data array to generate events according to the provided parameters.
+ * Each event type provided in params.data has the following structure:
+ *    - value: mean value
+ *    - variance: delta
+ *    these two fields define the range in which the events' content will be created:
+ *    [value-variance; value+variance]
+ *    - type: the type of the events
+ *    - steamId: the streamId (needs to be created beforehand)
+ * Each of these events will be created {numDays} times, once per day at the same time as {endTime}.
+ * e.g.:
+ *  - endTime: 1469712094 (July 28th 2016, 13:21:34 UTC)
+ *  - numDays: 10
+ *  this will created 10 events from July 19th to 28th at 13:21:34 UTC
+ *
+ * @param params
+ *          endTime {Number}
+ *          numDays {Number}
+ *          data {Array}
+ *            value {Number}
+ *            variance {Number}
+ *            type {String}
+ *            streamId {String}
  *
  * @returns {Array}
  */
-function generateEventsCreation(params) {
+function createNumericalEvents(params) {
 
   var secondsInDay = 60 * 60 * 24;
   var baseTime = params.endTime - secondsInDay * params.numDays;
@@ -80,7 +95,7 @@ function generateEventsCreation(params) {
             time: currentTime,
             type: e.type,
             streamId: e.streamId,
-            content: rand(e.content, e.variance)
+            content: rand(e.value, e.variance)
           }
         })
     });
