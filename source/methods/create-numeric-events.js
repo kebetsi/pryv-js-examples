@@ -2,55 +2,6 @@ var pryv = require('pryv'),
   async = require('async'),
   _ = require('lodash');
 
-var params = {
-  endTime: 1469699555,
-  numDays: 2,
-  data: [
-    {
-      value: 120,
-      variance: 20,
-      type: 'pressure/mmhg',
-      streamId: 'High-pressure-1234'
-    },
-    {
-      value: 80,
-      variance: 20,
-      type: 'pressure/mmhg',
-      streamId: 'Low-pressure-1234'
-    },
-    {
-      value: 70,
-      variance: 20,
-      type: 'frequency/bpm',
-      streamId: 'Heart-rate-1234'
-    },
-    {
-      value: 2000,
-      variance: 200,
-      type: 'energy/cal',
-      streamId: 'Total-calories-1234'
-    },
-    {
-      value: 5000,
-      variance: 2000,
-      type: 'count/steps',
-      streamId: 'Aerobics-1234'
-    },
-    {
-      value: 5.25,
-      variance: 0.8,
-      type: 'density/mmol-l',
-      streamId: 'Gylcemia-1234'
-    }
-  ]
-};
-
-var createEvents = createNumericalEvents(params);
-
-createEvents.forEach(function (e) {
-  console.log(e);
-});
-
 /**
  * Generates batch call data array to generate events according to the provided parameters.
  * Each event type provided in params.data has the following structure:
@@ -77,7 +28,7 @@ createEvents.forEach(function (e) {
  *
  * @returns {Array}
  */
-function createNumericalEvents(params) {
+module.exports = function createNumericEvents(params) {
 
   var secondsInDay = 60 * 60 * 24;
   var baseTime = params.endTime - secondsInDay * params.numDays;
