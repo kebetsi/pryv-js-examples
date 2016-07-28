@@ -12,7 +12,9 @@ Utilitary methods for Pryv data manipulation in **Node.js**
 
 ## Contribute
 
-Give me a pull request.
+`npm install` to download the dependencies
+
+`npm test` runs the test suite
 
 ## License
 
