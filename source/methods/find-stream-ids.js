@@ -2,16 +2,6 @@ var pryv = require('pryv'),
   async = require('async'),
   _ = require('lodash');
 
-var connection = new pryv.Connection({
-  username: 'anamaria',
-  auth: 'cir6b95ne505dzqyqqq6e7fy9',
-  domain: 'pryv.me'
-});
-
-findStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err, res) {
-  console.log(res);
-});
-
 /**
  * Returns the streamIds of the requested streams.
  * The format is an object:
