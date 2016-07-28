@@ -18,7 +18,7 @@ var params = {
   destinationConnection: destinationConnection,
   sourceStreamId: 'test',
   destinationStreamId: 'copy-data-stream',
-  getEventsParams: {
+  getEventsFilter: {
     limit: 1000
   },
   filtering: 10
@@ -42,7 +42,7 @@ copyData(params, function (err, res) {
  *          destinationConnection {pryv.Connection}
  *          sourceStreamId {String}
  *          destinationStreamId {String}
- *          getEventsParams {Object} (optional) filter for fetching the events according to
+ *          getEventsFilter {Object} (optional) filter for fetching the events according to
  *                http://api.pryv.com/reference/#get-events
  *          filtering {Number} (optional) allows to get only 1 event for every n (eg.: if
  *                filtering=5, only each 5th event will be copied)
@@ -54,27 +54,27 @@ function copyData(params, callback) {
     params.filtering = 1;
   }
 
-  if (!params.getEventsParams) {
-    params.getEventsParams = {};
+  if (!params.getEventsFilter) {
+    params.getEventsFilter = {};
   }
 
   var createEvents = [];
 
   async.series([
-      function fetchData(stepDone) {
+      function fetchDataOnSource (stepDone) {
 
-        var filter = _.extend(params.getEventsParams, {streams: [params.sourceStreamId]});
+        var filter = _.extend(params.getEventsFilter, {streams: [params.sourceStreamId]});
 
         params.sourceConnection.events.get(filter,
           function (err, events) {
             if (err) {
               return stepDone(err);
             }
-            events.forEach(function (e, i) {
+            events.forEach(function (event, i) {
               if (i % params.filtering == 0) {
                 createEvents.push({
                   method: 'events.create',
-                  params: _.extend(_.pick(e, ['time', 'type', 'content']),
+                  params: _.extend(_.pick(event, ['time', 'type', 'value']),
                     {streamId: params.destinationStreamId})
                 });
               }
@@ -82,12 +82,12 @@ function copyData(params, callback) {
             stepDone();
           })
       },
-      function (stepDone) {
+      function createDataOnDestination (stepDone) {
         destinationConnection.batchCall(createEvents, function (err, res) {
           if (err) {
             return stepDone(err);
           }
-          stepDone(res);
+          stepDone(null, res);
         })
       }
     ], function (err, res) {
