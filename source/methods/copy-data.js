@@ -2,38 +2,6 @@ var pryv = require('pryv'),
   async = require('async'),
   _ = require('lodash');
 
-var sourceConnection = new pryv.Connection({
-    username: 'javalibtest',
-    auth: 'ciqnpjz9u0gly91pny34szs2e',
-    domain: 'pryv.me'
-  }),
-  destinationConnection = new pryv.Connection({
-    username: 'javalibtest2',
-    auth: 'cir6aw6yx504zzqyq1zpaysig',
-    domain: 'pryv.me'
-  });
-
-var params = {
-  sourceConnection: sourceConnection,
-  destinationConnection: destinationConnection,
-  sourceStreamId: 'test',
-  destinationStreamId: 'copy-data-stream',
-  getEventsFilter: {
-    limit: 1000
-  },
-  filtering: 10
-};
-
-
-copyData(params, function (err, res) {
-  if (err) {
-    return console.log('error:\n', err);
-  }
-  res.forEach(function (r) {
-    console.log(r);
-  })
-});
-
 /**
  * Copies events from one Pryv account to another
  *
@@ -48,7 +16,7 @@ copyData(params, function (err, res) {
  *                filtering=5, only each 5th event will be copied)
  * @param callback
  */
-function copyData(params, callback) {
+module.exports = function copyData(params, callback) {
 
   if (!params.filtering) {
     params.filtering = 1;
@@ -94,4 +62,4 @@ function copyData(params, callback) {
       callback(err, res[1]);
     }
   );
-}
+};
