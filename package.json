@@ -4,7 +4,7 @@
   "description": "Useful javascript functions for Pryv data manipulation",
   "main": "source/main.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha test/*/*"
   },
   "repository": {
     "type": "git",
