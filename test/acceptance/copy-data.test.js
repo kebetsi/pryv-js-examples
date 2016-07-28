@@ -1,6 +1,8 @@
 /* global describe, it, before, after */
 
-var pyUtils = require('../../source/main');
+var pyUtils = require('../../source/main'),
+    pryv = require('pryv'),
+    should = require('should');
 
 describe('copyData', function () {
   this.timeout(10000);
@@ -31,13 +33,11 @@ describe('copyData', function () {
 
 
     pyUtils.copyData(params, function (err, res) {
-      if (err) {
-        return done(err);
-
-      }
+      should.not.exist(err);
+      should.exist(res);
       res.forEach(function (r) {
         console.log(r);
-      })
+      });
       done(err);
     });
   });
