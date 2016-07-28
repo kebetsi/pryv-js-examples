@@ -4,11 +4,13 @@ Utilitary methods for Pryv data manipulation in **Node.js**
 
 ## Usage
 
-### copyData(params, callback)
+`var pyUtils = require('source/main.js');`
 
-### createNumericEvents(params, callback)
+### pyUtils.copyData(params, callback)
 
-### findStreamIds(params, callback)
+### pyUtils.createNumericEvents(params, callback)
+
+### pyUtils.findStreamIds(params, callback)
 
 ## Contribute
 
