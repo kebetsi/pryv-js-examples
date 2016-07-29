@@ -20,10 +20,8 @@ Copies events from one Pryv account to another.
   - destinationConnection {pryv.Connection}  
   - sourceStreamId {String}  
   - destinationStreamId {String}  
-  - getEventsFilter {Object} (optional) filter for fetching the events according to   
-        http://api.pryv.com/reference/#get-events  
-  - filtering {Number} (optional) allows to get only 1 event for every n (eg.: if  
-                     filtering=5, only each 5th event will be copied)  
+  - getEventsFilter {Object} (optional) filter for fetching the events according to http://api.pryv.com/reference/#get-events  
+  - filtering {Number} (optional) allows to get only 1 event for every n (eg.: if filtering=5, only each 5th event will be copied)  
 
 ```javascript
 var params = {
