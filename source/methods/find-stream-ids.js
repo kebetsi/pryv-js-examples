@@ -25,7 +25,7 @@ var pryv = require('pryv'),
  * @param streamNames {Array}
  * @param callback {Function}
  */
-function findStreamIds(connection, streamNames, callback) {
+module.exports = function findStreamIds(connection, streamNames, callback) {
 
   async.series([
     function getStructure (stepDone) {

@@ -10,12 +10,12 @@ var pryv = require('pryv'),
  *    these two fields define the range in which the events' content will be created:
  *    [value-variance; value+variance]
  *    - type: the type of the events
- *    - steamId: the streamId (needs to be created beforehand)
+ *    - streamId: the streamId (needs to be created beforehand)
  * Each of these events will be created {numDays} times, once per day at the same time as {endTime}.
  * e.g.:
  *  - endTime: 1469712094 (July 28th 2016, 13:21:34 UTC)
  *  - numDays: 10
- *  this will created 10 events from July 19th to 28th at 13:21:34 UTC
+ *  This will create 10 events from July 19th to 28th at 13:21:34 UTC
  *
  * @param params
  *          endTime {Number}
@@ -57,4 +57,4 @@ module.exports = function createNumericEvents(params) {
   function rand(base, variance) {
     return Math.random() * (2 * variance) + base - variance;
   }
-}
+};
