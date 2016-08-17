@@ -17,7 +17,8 @@ Then in your code, use:
 
 
 Copies one stream's events from one Pryv account to another.  
-**params**:   
+
+### params:   
   - sourceConnection {pryv.Connection}  
   - destinationConnection {pryv.Connection}  
   - sourceStreamId {String}  
