@@ -10,7 +10,7 @@ add the following line to your package.json dependencies:
 
 Then in your code, use:  
 
-`var pyUtils = require('pyUtils');`
+`var pyUtils = require('pryv-utils');`
 
 ### pyUtils.copyData(params, callback)
 
@@ -94,7 +94,7 @@ var params = {
     {
       value: 80,
       variance: 20,
-      type: 'pressure/mmhg',¬
+      type: 'pressure/mmhg',
       streamId: 'Low-pressure-1234'
     },
     {
@@ -119,7 +119,7 @@ var params = {
       value: 5.25,
       variance: 0.8,
       type: 'density/mmol-l',
-      streamId: 'Gylcemia-1234'
+      streamId: 'Glycemia-1234'
     }
   ]
 };
