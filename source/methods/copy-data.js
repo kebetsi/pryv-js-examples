@@ -3,13 +3,14 @@ var pryv = require('pryv'),
   _ = require('lodash');
 
 /**
- * Copies events from one Pryv account to another
+ * Copies events and substreams from one Pryv account to another.
+ * If no target stream is provided, copies the source stream as well.
  *
  * @param params
  *          sourceConnection {pryv.Connection}
- *          destinationConnection {pryv.Connection}
- *          sourceStreamId {String}
- *          destinationStreamId {String}
+ *          targetConnection {pryv.Connection}
+ *          sourceStream {Stream-like}
+ *          targetStream {Stream-like}
  *          getEventsFilter {Object} (optional) filter for fetching the events according to
  *                http://api.pryv.com/reference/#get-events
  *          filtering {Number} (optional) allows to get only 1 event for every n (eg.: if
@@ -17,6 +18,11 @@ var pryv = require('pryv'),
  * @param callback
  */
 module.exports = function copyData(params, callback) {
+  
+  
+  if (! params.targetStream) {
+    params.targetStream = params.sourceStream;
+  }
 
   if (!params.filtering) {
     params.filtering = 1;
@@ -26,12 +32,35 @@ module.exports = function copyData(params, callback) {
     params.getEventsFilter = {};
   }
 
-  var createEvents = [];
+  var createEvents = [],
+    createStreams = [];
 
   async.series([
-      function fetchDataOnSource (stepDone) {
+      function fetchSubStreams(stepDone) {
+        params.sourceConnection.streams.get({parentId: params.sourceStream.id}, function (err, streams) {
+          if (err) {
+            return stepDone(err);
+          }
+          createStreams = buildBatchFromTree(streams);
 
-        var filter = _.extend(params.getEventsFilter, {streams: [params.sourceStreamId]});
+          // if copying to other stream, update its children parentId's
+          if (params.sourceStream.id !== params.targetStream.id) {
+            createStreams.forEach(function (s) {
+              s.params.parentId = params.targetStream.id;
+            });
+          } else {
+            createStreams.unshift({
+              method: 'streams.create',
+              params: params.sourceStream
+            })
+          }
+          
+          stepDone();
+        })
+      },
+      function fetchEventsOnSource(stepDone) {
+
+        var filter = _.extend(params.getEventsFilter, {streams: [params.sourceStream.id]});
 
         params.sourceConnection.events.get(filter,
           function (err, events) {
@@ -40,18 +69,23 @@ module.exports = function copyData(params, callback) {
             }
             events.forEach(function (event, i) {
               if (i % params.filtering == 0) {
+
+                // if copying to other stream, update its events streamId
+                if ((params.targetStream.id !== params.sourceStream.id) &&
+                  (event.streamId === params.sourceStream.id)) {
+                  event.streamId = params.targetStream.id;
+                }
                 createEvents.push({
                   method: 'events.create',
-                  params: _.extend(_.pick(event, ['time', 'type', 'value']),
-                    {streamId: params.destinationStreamId})
+                  params: event.getData()
                 });
               }
             });
             stepDone();
           })
       },
-      function createDataOnDestination (stepDone) {
-        params.destinationConnection.batchCall(createEvents, function (err, res) {
+      function createDataOntarget(stepDone) {
+        params.targetConnection.batchCall(createStreams.concat(createEvents), function (err, res) {
           if (err) {
             return stepDone(err);
           }
@@ -59,7 +93,34 @@ module.exports = function copyData(params, callback) {
         })
       }
     ], function (err, res) {
-      callback(err, res[1]);
+      callback(err, res[2]);
     }
   );
+
+  /**
+   * Takes a Stream tree and builds an array of streams.create calls in the right order.
+   *
+   * @param streamTree
+   * @returns {Array}
+   */
+  function buildBatchFromTree(streamTree) {
+    var batch = [];
+    treeAddStreams(streamTree);
+    return batch;
+
+    function treeAddStreams(streams) {
+      _.each(streams, function (stream) {
+        batch.push(streamCall(stream));
+        treeAddStreams(stream.children);
+      });
+    }
+
+    function streamCall(stream) {
+      return {
+        method: 'streams.create',
+        params: _.extend(stream.getData(), {id: stream.id})
+      }
+    };
+  };
+
 };

@@ -14,35 +14,44 @@ Then in your code, use:
 
 ### pyUtils.copyData(params, callback)
 
-
-
-Copies one stream's events from one Pryv account to another.  
+Copies one stream's events from one Pryv account to another.
+If no target stream is provided, copies the source stream as well.
 
 ### params:   
   - sourceConnection {pryv.Connection}  
-  - destinationConnection {pryv.Connection}  
-  - sourceStreamId {String}  
-  - destinationStreamId {String}  
+  - targetConnection {pryv.Connection}  
+  - sourceStream {Stream-like}
+  - targetStream {Stream-like}
   - getEventsFilter {Object} (optional) filter for fetching the events according to http://api.pryv.com/reference/#get-events  
   - filtering {Number} (optional) allows to get only 1 event for every n (eg.: if filtering=5, only each 5th event will be copied)  
 
 ```javascript
+var pryv = require('pryv');
+
 var sourceConnection = new pryv.Connection({
   username: 'jeremy',
   auth: '123tokenabc',
   domain: 'pryv.me'
 }),
-    destinationConnection = new pryv.Connection({
+    targetConnection = new pryv.Connection({
   username: 'bob',
   auth: 'myvalidToken12nin3',
   domain: 'pryv.me'
 });
 
+var srcStream = {
+    id: 'test',
+    name: 'Test'
+},  tgtStream = {
+    id: 'copy-data',
+    name: 'Dest'
+};
+
 var params = {
   sourceConnection: sourceConnection,
-  destinationConnection: destinationConnection,
-  sourceStreamId: 'test',
-  destinationStreamId: 'copy-data-stream',
+  targetConnection: targetConnection,
+  sourceStream: srcStream,
+  targetStream: tgtStream,
   getEventsFilter: {
     limit: 1000
   },

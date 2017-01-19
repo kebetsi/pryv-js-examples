@@ -14,8 +14,9 @@ describe('copyData', function () {
       domain: 'pryv.me'
     });
 
-    findStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err, res) {
+    pyUtils.findStreamIds(connection, ['Blood pressure', 'Health', 'Glycemia'], function (err, res) {
       console.log(res);
+      done();
     });
 
   });
