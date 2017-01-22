@@ -19,10 +19,10 @@ var pryv = require('pryv'),
  */
 module.exports = function copyData(params, callback) {
   
-  
   if (! params.targetStream) {
-    params.targetStream = params.sourceStream;
+    params.targetStream = _.pick(params.sourceStream,['id', 'name', 'parentId', 'trashed', 'clientData']);
   }
+  console.log('target', params.targetStream);
 
   if (!params.filtering) {
     params.filtering = 1;
@@ -51,7 +51,7 @@ module.exports = function copyData(params, callback) {
           } else {
             createStreams.unshift({
               method: 'streams.create',
-              params: params.sourceStream
+              params: params.targetStream
             })
           }
           
@@ -85,7 +85,9 @@ module.exports = function copyData(params, callback) {
           })
       },
       function createDataOntarget(stepDone) {
-        params.targetConnection.batchCall(createStreams.concat(createEvents), function (err, res) {
+        var data = createStreams.concat(createEvents);
+        console.log('data', data);
+        params.targetConnection.batchCall(data, function (err, res) {
           if (err) {
             return stepDone(err);
           }
