@@ -20,13 +20,15 @@ If no target stream is provided, copies the source stream as well.
 ### params:   
   - sourceConnection {pryv.Connection}  
   - targetConnection {pryv.Connection}  
-  - sourceStream {Stream-like}
-  - targetStream {Stream-like}
-  - getEventsFilter {Object} (optional) filter for fetching the events according to http://api.pryv.com/reference/#get-events  
-  - filtering {Number} (optional) allows to get only 1 event for every n (eg.: if filtering=5, only each 5th event will be copied)  
+  - sourceStream {Stream-like} requires only id
+  - targetStream {Stream-like} requires only id
+  - getEventsFilter {Object} (optional) filter for fetching the events according to http://api.pryv.com/reference/#get-events, default: {limit:10000}
+  - filtering {Number} (optional) allows to get only 1 event for every n (eg.: if filtering=5, only each 5th event will be copied)
+  - isStrict {Boolean} if set, ignores substreams and subevents
 
 ```javascript
-var pryv = require('pryv');
+var pryv = require('pryv'),
+    pyUtils = require('pryv-utils';
 
 var sourceConnection = new pryv.Connection({
   username: 'jeremy',

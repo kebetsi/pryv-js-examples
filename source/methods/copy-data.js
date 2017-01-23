@@ -15,28 +15,34 @@ var pryv = require('pryv'),
  *                http://api.pryv.com/reference/#get-events
  *          filtering {Number} (optional) allows to get only 1 event for every n (eg.: if
  *                filtering=5, only each 5th event will be copied)
+ *          isStrict {boolean} (optional) If set, will not copy substreams.
  * @param callback
  */
 module.exports = function copyData(params, callback) {
-  
-  if (! params.targetStream) {
-    params.targetStream = _.pick(params.sourceStream,['id', 'name', 'parentId', 'trashed', 'clientData']);
+
+  if (!params.targetStream) {
+    params.targetStream = _.pick(params.sourceStream, ['id', 'name', 'parentId', 'trashed', 'clientData']);
   }
-  console.log('target', params.targetStream);
+  console.log('targettt', params.targetStream.id);
 
   if (!params.filtering) {
     params.filtering = 1;
   }
 
   if (!params.getEventsFilter) {
-    params.getEventsFilter = {};
+    params.getEventsFilter = {limit: 10000};
   }
 
   var createEvents = [],
     createStreams = [];
 
+  var stats = {};
+
   async.series([
       function fetchSubStreams(stepDone) {
+        if (params.isStrict) {
+          return stepDone();
+        }
         params.sourceConnection.streams.get({parentId: params.sourceStream.id}, function (err, streams) {
           if (err) {
             return stepDone(err);
@@ -54,7 +60,7 @@ module.exports = function copyData(params, callback) {
               params: params.targetStream
             })
           }
-          
+
           stepDone();
         })
       },
@@ -68,17 +74,30 @@ module.exports = function copyData(params, callback) {
               return stepDone(err);
             }
             events.forEach(function (event, i) {
-              if (i % params.filtering == 0) {
+              if ((params.isStrict && event.streamId === params.sourceStream.id) ||
+                (!params.isStrict)) {
+                if (i % params.filtering == 0) {
 
-                // if copying to other stream, update its events streamId
-                if ((params.targetStream.id !== params.sourceStream.id) &&
-                  (event.streamId === params.sourceStream.id)) {
-                  event.streamId = params.targetStream.id;
+                  console.log('processing', event.getData());
+                  // if copying to other stream, update its events streamId
+                  if ((params.targetStream.id !== params.sourceStream.id) &&
+                    (event.streamId === params.sourceStream.id)) {
+                    event.streamId = params.targetStream.id;
+                  }
+
+
+                  if (!stats[event.streamId]) {
+                    stats[event.streamId] = 1
+                  } else {
+                    stats[event.streamId] = stats[event.streamId] + 1
+                  }
+
+                  createEvents.push({
+                    method: 'events.create',
+                    params: event.getData()
+                  });
+
                 }
-                createEvents.push({
-                  method: 'events.create',
-                  params: event.getData()
-                });
               }
             });
             stepDone();
@@ -86,11 +105,14 @@ module.exports = function copyData(params, callback) {
       },
       function createDataOntarget(stepDone) {
         var data = createStreams.concat(createEvents);
-        console.log('data', data);
+        console.log('data', data.length);
+        console.log('stats', stats)
         params.targetConnection.batchCall(data, function (err, res) {
+          console.log('batch call err', err, 'res', res);
           if (err) {
             return stepDone(err);
           }
+          console.log('batch call res', res);
           stepDone(null, res);
         })
       }
