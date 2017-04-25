@@ -10,7 +10,8 @@ describe('createNumericEvents', function () {
 
     var params = {
       endTime: 1469699555,
-      numDays: 2,
+      numDays: 4,
+      frequency: 2,
       data: [
         {
           value: 120,
@@ -54,7 +55,7 @@ describe('createNumericEvents', function () {
     var createEvents = pyUtils.createNumericEvents(params);
 
     should.exist(createEvents);
-    createEvents.length.should.eql(params.data.length * params.numDays);
+    createEvents.length.should.eql(params.data.length * Math.floor(params.numDays / params.frequency));
 
     var d = params.data,
         len = d.length,
@@ -62,13 +63,12 @@ describe('createNumericEvents', function () {
         eventData,
         c;
 
+    console.log('createEv', createEvents)
+
     createEvents.forEach(function (batchMethod, i) {
       batchMethod.method.should.eql('events.create');
       eventData = batchMethod.params;
-      should.exist(eventData);
-      should.exist(eventData);
-      should.exist(eventData);
-      should.exist(eventData);
+
 
 
 

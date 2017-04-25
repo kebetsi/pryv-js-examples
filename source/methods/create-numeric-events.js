@@ -20,6 +20,7 @@ var pryv = require('pryv'),
  * @param params
  *          endTime {Number}
  *          numDays {Number}
+ *          frequency {Number} (optional)
  *          data {Array}
  *            value {Number}
  *            variance {Number}
@@ -34,22 +35,30 @@ module.exports = function createNumericEvents(params) {
   var baseTime = params.endTime - secondsInDay * params.numDays;
 
   var events = [];
+
+  if (! params.frequency) {
+    params.frequency = 1;
+  }
+
   for (var i = 0; i < params.numDays; i++) {
 
-    var currentTime = baseTime + i * secondsInDay;
+    if (i % params.frequency === 0) {
 
-    params.data.forEach(function (e) {
-      events.push(
-        {
-          method: 'events.create',
-          params: {
-            time: currentTime,
-            type: e.type,
-            streamId: e.streamId,
-            content: rand(e.value, e.variance)
-          }
-        })
-    });
+      var currentTime = baseTime + i * secondsInDay;
+
+      params.data.forEach(function (e) {
+        events.push(
+          {
+            method: 'events.create',
+            params: {
+              time: currentTime,
+              type: e.type,
+              streamId: e.streamId,
+              content: rand(e.value, e.variance)
+            }
+          })
+      });
+    }
   }
   return events;
 

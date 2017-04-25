@@ -71,20 +71,21 @@ pyUtils.copyData(params, function (err, res) {
 });
 ```
 
-### pyUtils.createNumericEvents(params, callback)
+### pyUtils.createNumericEvents(params)
 
 Creates an array of batch method calls for Events creation. This is used for events of [numerical](http://api.pryv.com/event-types/#numerical-types) type.
 
 The params object has the following fields:
 - data: array of the following:  
   - value: mean value
-  - variance: delta  
+  - variance: delta
     these two fields define the range in which the events' content will be created:
     [value-variance; value+variance]
   - type: the type of the events
   - streamId: the stream to which the events shall be added   
 - endTime: the timestamp of the last event
-- numDays: the number of times each event type will be created.  
+- numDays: the number of times each event type will be created
+- frequency: the rate at which events are created. Ex.: if 2, every 2 days, if 3 every 3 days, etc
 Each of these events will be created *numDays* times, once per day at the same time as *endTime*.  
 e.g.:  
   - endTime: 1469712094 (July 28th 2016, 13:21:34 UTC)  
@@ -140,7 +141,7 @@ var createEvents = pyUtils.createNumericEvents(params);
 
 ### pyUtils.findStreamIds(connection, streamNames, callback)
 
-Returns the stream Ids of the array of streams provided in parameter.
+Returns the stream Ids of the array of streams names provided in parameter.
 
 ```javascript
 var connection = new pryv.Connection({
